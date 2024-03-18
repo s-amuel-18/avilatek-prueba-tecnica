@@ -5,7 +5,7 @@ import { UnauthorizedException } from '../utils/error-exeptions.util';
 
 class JwtService {
   generateToken = (payload: JwtCustomPayload): string => {
-    return jwt.sign(payload, environment.JWT_SECRET);
+    return jwt.sign(payload, environment.JWT_SECRET, { expiresIn: environment.JWT_EXPIRATION });
   };
 
   verifyToken = (token: string): any => {
@@ -18,7 +18,7 @@ class JwtService {
 
   extractBearerToken(authorization: string | undefined) {
     if (!authorization) return null;
-    return authorization.split(' ')[0] === 'Bearer' ? authorization.split(' ')[1] : null;
+    return authorization.split(' ')[0] === 'Bearer' ? authorization.split(' ')[1].trim() : null;
   }
 
   regenerateToken(authorization: string | undefined) {
