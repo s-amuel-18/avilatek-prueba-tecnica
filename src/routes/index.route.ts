@@ -2,6 +2,7 @@
 
 import { Application } from "express";
 import user from "./user.route";
+import { JwtService } from "../services/jwt.service";
 
 export const initRoutes = (app: Application, baseUrl = "/api") => {
   try {

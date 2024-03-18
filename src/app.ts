@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { version } from "../package.json";
-import { initRoutes } from "./routes";
+import { initRoutes } from "./routes/index.route";
 import { CError } from "./interfaces/error.interface";
 import { RequestBackpack } from "./interfaces/express.interface";
 
