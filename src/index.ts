@@ -1,11 +1,7 @@
-// import http from "http";
 import app from "./app";
+import { environment } from "./config/environment.config";
 
-const PORT = 3000;
-
-// const server = http.createServer(app);
-
-app.listen(PORT, () => {
+app.listen(environment.APP_PORT, () => {
   try {
     console.log("[SERVER STARTED]");
   } catch (error) {

@@ -1,17 +1,24 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
-
-// import { initRoutes } from "./routes";
 import { version } from "../package.json";
 import { initRoutes } from "./routes";
 import { CError } from "./interfaces/error.interface";
+import { RequestBackpack } from "./interfaces/express.interface";
 
 const app = express();
+
+declare global {
+  namespace Express {
+    interface Request {
+      backpack: RequestBackpack;
+    }
+  }
+}
+
 // ** Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-// app.use(express.static(path.join(__dirname, "../public")));
 
 // ** HTTP Methods Allowed
 app.use((req, res, next) => {
@@ -37,10 +44,15 @@ app.use((req, res, next) => {
   }
 });
 
-app.use((_req, res, next) => {
+// ** Response interceptor
+app.use((req: Request, res, next) => {
   try {
-    /* Express interceptor */
+    req.backpack = {
+      token: null,
+    };
+
     const oldJson = res.json;
+
     const response = {
       version,
       token: "",
@@ -54,10 +66,6 @@ app.use((_req, res, next) => {
 
       if (data.message) {
         response.message = data.message;
-      }
-
-      if (res.locals.token) {
-        response.token = res.locals.token;
       }
 
       if (data.data) {
@@ -78,7 +86,6 @@ app.use((_req, res, next) => {
 
       return res.json(response);
     };
-
     return next();
   } catch (error) {
     console.log(error);
