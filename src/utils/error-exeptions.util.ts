@@ -1,20 +1,20 @@
-import { HttpStatus } from "./http-status.util";
+import { HttpStatus } from './http-status.util';
 
 export class BadRequestException {
   status = HttpStatus.BAD_REQUEST;
   message?: string;
 
   constructor(message?: string) {
-    this.message = message || "BAD REQUEST";
+    this.message = message || 'BAD REQUEST';
   }
 }
 
 export class NotFoundException {
   status = HttpStatus.NOT_FOUND;
-  message?: string;
+  message: string;
 
   constructor(message?: string) {
-    this.message = message || "NOT FOUND";
+    this.message = message || 'NOT FOUND';
   }
 }
 
@@ -23,6 +23,6 @@ export class UnauthorizedException {
   message?: string;
 
   constructor(message?: string) {
-    this.message = message || "UNAUTHORIZED";
+    this.message = message || 'UNAUTHORIZED';
   }
 }
