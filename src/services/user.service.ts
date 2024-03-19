@@ -1,6 +1,7 @@
 // import { User } from 'src/models/user.model';
 
 import { CreateUser } from '../interfaces/services/user-service.interface';
+import { adminRole } from '../models/role.model';
 import { User } from '../models/user.model';
 
 class UserService {
@@ -14,7 +15,11 @@ class UserService {
     });
   }
 
-  // * Finders
+  // * Find
+  async findById(id: number) {
+    return await User.findOne({ where: { id } });
+  }
+
   async findByEmail(email: string) {
     return await User.findOne({ where: { email } });
   }
@@ -22,7 +27,7 @@ class UserService {
   // * Seeders
   async seeder() {
     const newUser = await User.create({
-      roleId: 1,
+      roleId: adminRole,
       name: 'Samuel Graterol',
       email: 'samuel@graterol.com',
       password: '11111111',

@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 
 export const validateEmail = (field?: string) =>
   body(field || 'email')
@@ -24,3 +24,9 @@ export const validatePassword = (field?: string) =>
     .bail()
     .isLength({ max: 50 })
     .withMessage('Longitud máxima 50');
+
+export const pagination = () => [
+  query('limit').optional().isInt({ min: 1 }).toInt(),
+  query('page').optional().isInt({ min: 1 }).toInt(),
+  query('search').optional().isString().notEmpty(),
+];

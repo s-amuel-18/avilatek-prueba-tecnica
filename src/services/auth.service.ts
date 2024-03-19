@@ -3,6 +3,7 @@ import { BadRequestException, NotFoundException } from '../utils/error-exeptions
 import { jwtService } from './jwt.service';
 import { userService } from './user.service';
 import { CreateUser } from '../interfaces/services/user-service.interface';
+import { adminRole } from '../models/role.model';
 
 class AuthService {
   async login(LoginParams: LoginParams) {
@@ -20,7 +21,7 @@ class AuthService {
   }
 
   async signUp(createUser: CreateUser) {
-    return await userService.create({ ...createUser, roleId: 1 });
+    return await userService.create({ ...createUser, roleId: adminRole });
   }
 }
 

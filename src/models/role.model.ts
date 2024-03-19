@@ -1,7 +1,7 @@
 import { Model, AutoIncrement, Column, DataType, PrimaryKey, Table } from 'sequelize-typescript';
 
-export const roleAdmin = 1;
-export const roleClient = 2;
+export const adminRole = 1;
+export const clientRole = 2;
 
 @Table({ tableName: 'roles' })
 export class Role extends Model {
