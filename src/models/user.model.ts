@@ -10,11 +10,17 @@ import {
   BeforeCreate,
   UpdatedAt,
   HasMany,
+  DefaultScope,
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcryptjs';
 import { OrderHistory } from './order-history.model';
 import { adminRole } from './role.model';
 
+export const excludedAttributes = ['password'];
+
+@DefaultScope({
+  attributes: { exclude: excludedAttributes },
+})
 @Table({ tableName: 'users' })
 export class User extends Model {
   @PrimaryKey
@@ -28,7 +34,7 @@ export class User extends Model {
   @Column({ type: DataType.STRING(50), field: 'name', allowNull: false })
   name: string;
 
-  @Column({ type: DataType.STRING(50), field: 'email', unique: true, allowNull: false })
+  @Column({ type: DataType.STRING(50), field: 'email', allowNull: false })
   email: string;
 
   @Column({ type: DataType.STRING(100), field: 'password', unique: true, allowNull: false })
