@@ -1,4 +1,6 @@
+import { Op } from 'sequelize';
 import { CreateProduct } from '../interfaces/services/product-service.interface';
+import { Pagination } from '../interfaces/validations/pagination.interface';
 import { Product } from '../models/product.model';
 import { BadRequestException } from '../utils/error-exeptions.util';
 
@@ -16,7 +18,19 @@ class ProductService {
   }
 
   // * Find
-  async findAll() {}
+  async findAll(pagination: Pagination) {
+    const { limit = 10, page = 1, search = null } = pagination;
+    const offset = (page - 1) * limit;
+
+    const products = await Product.findAndCountAll({
+      offset,
+      limit,
+      where: {
+        ...(search ? { [Op.or]: [{ name: { [Op.iLike]: `%${search}%` } }] } : {}),
+      },
+    });
+    return products;
+  }
 
   async findOne() {}
 

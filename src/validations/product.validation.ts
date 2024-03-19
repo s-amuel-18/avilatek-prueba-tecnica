@@ -1,7 +1,8 @@
 import { body } from 'express-validator';
 import { validate } from '../utils/validate.util';
+import { pagination } from './utils.validation';
 
-export const createProductValidate = () => [
+export const createProductValidation = () => [
   body('name')
     .notEmpty()
     .withMessage('El nombre del producto es requerido.')
@@ -38,3 +39,5 @@ export const createProductValidate = () => [
     .bail(),
   validate,
 ];
+
+export const findAllProductsValidation = () => [...pagination()];
