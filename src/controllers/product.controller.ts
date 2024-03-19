@@ -70,6 +70,20 @@ class ProductController {
     }
   }
 
+  async findOrderById(req: Request, res: Response, next: NextFunction) {
+    const orderId = +req.params.orderId;
+    console.log({ orderId });
+    try {
+      const order = await productService.findOrderById(orderId, { exceptionIfNotFound: true });
+
+      res.json({
+        data: { order },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // * Patch Methods
   async update(req: Request, res: Response, next: NextFunction) {
     const productId = +req.params.id;

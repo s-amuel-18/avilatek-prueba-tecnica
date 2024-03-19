@@ -44,7 +44,7 @@ export const createProductValidation = () => [
 
 export const findAllProductsValidation = () => [...pagination()];
 
-export const findByIdProductValidation = () => [param('id').notEmpty().isInt().toInt(), validate];
+export const findProductByIdValidation = () => [param('id').notEmpty().isInt().toInt(), validate];
 
 export const updateProductValidation = () => [
   body('name')
@@ -90,13 +90,6 @@ export const updateProductValidation = () => [
 ];
 
 export const newOrderProductValidation = () => [
-  // body('productId')
-  //   .notEmpty()
-  //   .withMessage('El ID del producto es requerido.')
-  //   .bail()
-  //   .isInt({ min: 1 })
-  //   .withMessage('El ID del producto debe ser un numero entero valido.')
-  //   .toInt(),
   body('quantity')
     .notEmpty()
     .withMessage('La cantidad es requerido.')
@@ -107,3 +100,5 @@ export const newOrderProductValidation = () => [
 
   validate,
 ];
+
+export const findOrderByIdValidation = () => [param('orderId').notEmpty().isInt().toInt(), validate];

@@ -83,7 +83,11 @@ class ProductService {
     const { exceptionIfNotFound = true, notFoundMsg = 'La orden no se encuentra registrado.' } =
       findOneOptions;
 
-    const order = await OrderHistory.findOne({ where: { id: orderId } });
+    const order = await OrderHistory.findOne({
+      where: { id: orderId },
+      include: [{ model: User }, { model: Product }],
+    });
+
     if (exceptionIfNotFound && !order) throw new NotFoundException(notFoundMsg);
     return order;
   }
