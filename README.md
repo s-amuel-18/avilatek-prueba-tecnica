@@ -56,6 +56,8 @@ Ejecutamos el comando siguiente comando para inicializar el servidor de desarrol
   npm run dev
 ```
 
+IMPORTANTE: Si tienes algún error con respecto al paquete nodemon, puedes ejecutar el comando `npm install -g nodemon` para una instalación global en tu sistema.
+
 NOTA: Podemos cambiar a "false" las variables de sincronización de tablas luego de que se creen todas las tablas necesarias.
 
 Posteriormente ejecutamos una petición de tipo GET al endpoint `api/seeders/execute` para crear los registros necesarios en nuestra base de datos.
