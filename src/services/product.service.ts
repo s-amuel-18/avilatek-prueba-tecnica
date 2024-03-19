@@ -3,6 +3,7 @@ import {
   CreateProduct,
   UpdateProduct,
   CreateNewOrder,
+  FindAllOrdersParams,
 } from '../interfaces/services/product-service.interface';
 import { Pagination } from '../interfaces/validations/pagination.interface';
 import { Product } from '../models/product.model';
@@ -73,6 +74,22 @@ class ProductService {
     const product = await Product.findOne({ where: { id } });
     if (exceptionIfNotFound && !product) throw new NotFoundException(notFoundMsg);
     return product;
+  }
+
+  async findAllOrders(findAllOrdersParams: FindAllOrdersParams) {
+    const { limit = 10, page = 1, userId = null, productId = null, status = null } = findAllOrdersParams;
+    const offset = (page - 1) * limit;
+
+    return await OrderHistory.findAndCountAll({
+      distinct: true,
+      offset,
+      limit,
+      where: {
+        ...(userId ? { userId } : {}),
+        ...(productId ? { productId } : {}),
+        ...(status ? { status } : {}),
+      },
+    });
   }
 
   async findByName(name: string) {

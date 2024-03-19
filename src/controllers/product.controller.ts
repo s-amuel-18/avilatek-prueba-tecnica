@@ -5,6 +5,7 @@ import { matchedData } from 'express-validator';
 import {
   CreateNewOrder,
   CreateProduct,
+  FindAllOrdersParams,
   UpdateProduct,
 } from '../interfaces/services/product-service.interface';
 import { User } from '../models/user.model';
@@ -70,9 +71,26 @@ class ProductController {
     }
   }
 
+  async findAllOrders(req: Request, res: Response, next: NextFunction) {
+    const filterParams = matchedData(req) as FindAllOrdersParams;
+    const authUser = req.backpack!.authUser;
+    console.log({ authUser });
+    if (!authUser?.isAdmin()) filterParams.userId = authUser?.id;
+
+    try {
+      const orders = await productService.findAllOrders(filterParams);
+
+      res.json({
+        data: { orders },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findOrderById(req: Request, res: Response, next: NextFunction) {
     const orderId = +req.params.orderId;
-    console.log({ orderId });
+
     try {
       const order = await productService.findOrderById(orderId, { exceptionIfNotFound: true });
 

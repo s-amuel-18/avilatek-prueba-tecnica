@@ -6,6 +6,7 @@ import {
   findOrderByIdValidation,
   newOrderProductValidation,
   updateProductValidation,
+  findAllOrdersValidation,
 } from '../validations/product.validation';
 import { productController } from '../controllers/product.controller';
 import { auth } from '../middleware/auth.middleware';
@@ -15,6 +16,7 @@ const router = Router();
 
 // * Get Methods
 router.get('/', auth(), findAllProductsValidation(), productController.findAll);
+router.get('/orders', auth(), findAllOrdersValidation(), productController.findAllOrders);
 router.get('/:id', auth(), findProductByIdValidation(), productController.findById);
 router.get('/order/:orderId', auth(), findOrderByIdValidation(), productController.findOrderById);
 
