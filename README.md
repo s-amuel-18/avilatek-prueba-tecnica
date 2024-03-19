@@ -98,7 +98,9 @@ Listado de Scripts necesarios para el funcionamiento del proyecto.
 
 En el siguiente enlace podrás tener una documentación precisa de cada endpoint y como funciona.
 
-[Documentación de servicio](https://documenter.getpostman.com/view/14681924/2sA358c5Kf)
+<a href="https://documenter.getpostman.com/view/14681924/2sA358c5Kf" target="_blank">
+  Documentación de servicio
+</a>
 
 ## 5. Opciones de diseño y explicaciones
 
@@ -124,4 +126,4 @@ Además, se optó por implementar Sequelize como ORM (Object-Relational Mapping)
 
 En el siguiente enlace encontrarás el diagrama entidad relación que se preparó para la construcción de la API
 
-[Diagrama entidad relación](https://dbdiagram.io/d/65f83b08ae072629ce4b3f7f)
+<a href="https://dbdiagram.io/d/65f83b08ae072629ce4b3f7f" target="_blank">Diagrama entidad relación</a>
