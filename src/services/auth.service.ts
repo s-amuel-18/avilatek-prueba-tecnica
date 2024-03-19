@@ -3,25 +3,27 @@ import { BadRequestException, NotFoundException } from '../utils/error-exeptions
 import { jwtService } from './jwt.service';
 import { userService } from './user.service';
 import { CreateUser } from '../interfaces/services/user-service.interface';
-import { adminRole } from '../models/role.model';
+import { adminRole, clientRole } from '../models/role.model';
 
 class AuthService {
   async login(LoginParams: LoginParams) {
-    const user = await userService.findByEmail(LoginParams.email);
-    if (!user) throw new NotFoundException('El usuario no se encuentra registrado.');
+    const user = await userService.findByEmail(LoginParams.email, {
+      includeHiddenFields: true,
+      exceptionIfNotFound: true,
+    });
 
-    const isValidPassword = user.verifyPassword(LoginParams.password);
+    const isValidPassword = user!.verifyPassword(LoginParams.password);
     if (!isValidPassword) throw new BadRequestException('Contraseña invalida.');
 
-    const token = jwtService.generateToken({ userId: user.id });
-    const userJson = user.toJSON();
+    const token = jwtService.generateToken({ userId: user!.id });
+    const userJson = user?.toJSON();
     delete userJson.password;
 
     return { token, user: userJson };
   }
 
   async signUp(createUser: CreateUser) {
-    return await userService.create({ ...createUser, roleId: adminRole });
+    return await userService.create({ ...createUser, roleId: clientRole });
   }
 }
 
