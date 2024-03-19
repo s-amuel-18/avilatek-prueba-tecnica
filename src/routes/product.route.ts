@@ -3,6 +3,7 @@ import {
   createProductValidation,
   findAllProductsValidation,
   findByIdProductValidation,
+  updateProductValidation,
 } from '../validations/product.validation';
 import { productController } from '../controllers/product.controller';
 import { auth } from '../middleware/auth.middleware';
@@ -18,6 +19,13 @@ router.get('/:id', auth(), findByIdProductValidation(), productController.findBy
 router.post('/', auth({ allowedRoles: [adminRole] }), createProductValidation(), productController.create);
 
 // * Patch Methods
+router.patch(
+  '/:id',
+  auth({ allowedRoles: [adminRole] }),
+  findByIdProductValidation(),
+  updateProductValidation(),
+  productController.update,
+);
 
 // * Delete Methods
 router.delete(

@@ -49,6 +49,22 @@ class ProductController {
   }
 
   // * Patch Methods
+  async update(req: Request, res: Response, next: NextFunction) {
+    const productId = +req.params.id;
+    const body = req.body;
+
+    try {
+      const product = await productService.update(productId, body);
+
+      res.json({
+        data: {
+          product,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   // * Delete Methods
   async remove(req: Request, res: Response, next: NextFunction) {

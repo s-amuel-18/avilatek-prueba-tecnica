@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { CreateProduct } from '../interfaces/services/product-service.interface';
+import { CreateProduct, UpdateProduct } from '../interfaces/services/product-service.interface';
 import { Pagination } from '../interfaces/validations/pagination.interface';
 import { Product } from '../models/product.model';
 import { BadRequestException, NotFoundException } from '../utils/error-exeptions.util';
@@ -47,7 +47,12 @@ class ProductService {
   }
 
   // * Update
-  async update(productId: number) {}
+  async update(productId: number, updateProduct: UpdateProduct) {
+    const product = await this.findById(productId, { exceptionIfNotFound: true });
+    await product?.update(updateProduct);
+
+    return this.findById(productId);
+  }
 
   // * Remove
   async remove(productId: number) {
