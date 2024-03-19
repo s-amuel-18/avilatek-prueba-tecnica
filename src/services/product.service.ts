@@ -10,7 +10,12 @@ import { Product } from '../models/product.model';
 import { BadRequestException, NotFoundException } from '../utils/error-exeptions.util';
 import { FindOneOptions } from '../interfaces/service.interface';
 import { User } from '../models/user.model';
-import { OrderHistory, deliveredStatusOrder, pendingStatusOrder } from '../models/order-history.model';
+import {
+  OrderHistory,
+  canceledStatusOrder,
+  deliveredStatusOrder,
+  pendingStatusOrder,
+} from '../models/order-history.model';
 
 class ProductService {
   // * Create
@@ -117,13 +122,21 @@ class ProductService {
     return this.findById(productId);
   }
 
+  // TODO: En un caso real se debería agregar una transacción
   async changeOrderStatus(orderId: number, status: number) {
     const order = await this.findOrderById(orderId, { exceptionIfNotFound: true });
 
-    if (order?.status === deliveredStatusOrder)
-      throw new BadRequestException('El pedido ya fue entregado, no puede ser modificado.');
+    if (order?.status != pendingStatusOrder)
+      throw new BadRequestException('El pedido no puede ser modificado.');
 
     await order?.update({ status });
+
+    if (status == canceledStatusOrder) {
+      const product = await this.findById(order.productId, { exceptionIfNotFound: false });
+
+      if (product) await this.update(product.id, { stock: product.stock + order.quantity });
+    }
+
     return await this.findOrderById(orderId);
   }
 
