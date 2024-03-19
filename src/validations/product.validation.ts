@@ -1,6 +1,7 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import { validate } from '../utils/validate.util';
 import { pagination } from './utils.validation';
+import { orderStatusArray } from '../models/order-history.model';
 
 export const createProductValidation = () => [
   body('name')
@@ -11,7 +12,8 @@ export const createProductValidation = () => [
     .withMessage('El nombre del producto debe ser de tipo texto.')
     .bail()
     .isLength({ max: 50 })
-    .withMessage('Longitud maxima de 50 caracteres.'),
+    .withMessage('Longitud maxima de 50 caracteres.')
+    .customSanitizer((name: string) => name.trim()),
   body('price')
     .notEmpty()
     .withMessage('El precio es requerido.')
@@ -36,13 +38,14 @@ export const createProductValidation = () => [
     .bail()
     .isLength({ max: 500 })
     .withMessage('Longitud maxima de 500 caracteres.')
-    .bail(),
+    .bail()
+    .customSanitizer((desc: string) => desc.trim()),
   validate,
 ];
 
 export const findAllProductsValidation = () => [...pagination()];
 
-export const findByIdProductValidation = () => [param('id').notEmpty().isInt().toInt(), validate];
+export const findProductByIdValidation = () => [param('id').notEmpty().isInt().toInt(), validate];
 
 export const updateProductValidation = () => [
   body('name')
@@ -54,7 +57,8 @@ export const updateProductValidation = () => [
     .withMessage('El nombre del producto debe ser de tipo texto.')
     .bail()
     .isLength({ max: 50 })
-    .withMessage('Longitud maxima de 50 caracteres.'),
+    .withMessage('Longitud maxima de 50 caracteres.')
+    .customSanitizer((name: string) => name.trim()),
   body('price')
     .optional()
     .notEmpty()
@@ -81,6 +85,45 @@ export const updateProductValidation = () => [
     .bail()
     .isLength({ max: 500 })
     .withMessage('Longitud maxima de 500 caracteres.')
-    .bail(),
+    .bail()
+    .customSanitizer((desc: string) => desc.trim()),
+  validate,
+];
+
+export const newOrderProductValidation = () => [
+  body('quantity')
+    .notEmpty()
+    .withMessage('La cantidad es requerido.')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('debe ser un numero entero valido')
+    .toInt(),
+
+  validate,
+];
+
+export const findOrderByIdValidation = () => [param('orderId').notEmpty().isInt().toInt(), validate];
+
+export const findAllOrdersValidation = () => [
+  ...pagination(),
+  query('userId').optional().notEmpty().isInt().toInt(),
+  query('productId').optional().notEmpty().isInt().toInt(),
+  query('status').optional().notEmpty().isInt().toInt(),
+  validate,
+];
+
+export const changeOrderStatusValidation = () => [
+  body('status')
+    .notEmpty()
+    .withMessage('El status es requerido')
+    .bail()
+    .isInt()
+    .withMessage('El status debe ser un numero entero validao.')
+    .bail()
+    .toInt()
+    .custom(status => {
+      if (!orderStatusArray.includes(+status)) throw new Error('El estatus es invalido.');
+      return true;
+    }),
   validate,
 ];

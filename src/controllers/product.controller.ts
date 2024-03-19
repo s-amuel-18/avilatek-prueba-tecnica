@@ -1,11 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import { productService } from '../services/product.service';
 import { Pagination } from '../interfaces/validations/pagination.interface';
+import { matchedData } from 'express-validator';
+import {
+  CreateNewOrder,
+  CreateProduct,
+  FindAllOrdersParams,
+  UpdateProduct,
+} from '../interfaces/services/product-service.interface';
+import { User } from '../models/user.model';
 
 class ProductController {
   // * Post Methods
   async create(req: Request, res: Response, next: NextFunction) {
-    const body = req.body;
+    const body = matchedData(req) as CreateProduct;
 
     try {
       const newProduct = await productService.create(body);
@@ -13,6 +21,21 @@ class ProductController {
       res.json({
         message: 'Producto creado correctamente.',
         data: { product: newProduct },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async newOrder(req: Request, res: Response, next: NextFunction) {
+    const authUser = req.backpack.authUser as User;
+    const productId = req.params.id;
+    const { quantity } = matchedData(req);
+
+    try {
+      const order = await productService.createNewOrder(authUser, { quantity, productId: +productId });
+      res.json({
+        data: { order },
       });
     } catch (error) {
       next(error);
@@ -48,10 +71,41 @@ class ProductController {
     }
   }
 
+  async findAllOrders(req: Request, res: Response, next: NextFunction) {
+    const filterParams = matchedData(req) as FindAllOrdersParams;
+    const authUser = req.backpack!.authUser;
+    console.log({ authUser });
+    if (!authUser?.isAdmin()) filterParams.userId = authUser?.id;
+
+    try {
+      const orders = await productService.findAllOrders(filterParams);
+
+      res.json({
+        data: { orders },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async findOrderById(req: Request, res: Response, next: NextFunction) {
+    const orderId = +req.params.orderId;
+
+    try {
+      const order = await productService.findOrderById(orderId, { exceptionIfNotFound: true });
+
+      res.json({
+        data: { order },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // * Patch Methods
   async update(req: Request, res: Response, next: NextFunction) {
     const productId = +req.params.id;
-    const body = req.body;
+    const { id, ...body } = matchedData(req);
 
     try {
       const product = await productService.update(productId, body);
@@ -60,6 +114,19 @@ class ProductController {
         data: {
           product,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async changeOrderStatus(req: Request, res: Response, next: NextFunction) {
+    const { status } = matchedData(req);
+    const orderId = +req.params.orderId;
+    try {
+      const order = await productService.changeOrderStatus(orderId, status);
+      res.json({
+        data: { order },
       });
     } catch (error) {
       next(error);

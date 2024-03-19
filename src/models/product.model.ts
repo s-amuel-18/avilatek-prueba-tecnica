@@ -7,7 +7,7 @@ export class Product extends Model {
   @Column({ type: DataType.INTEGER })
   id: number;
 
-  @Column({ type: DataType.STRING(50), allowNull: false, unique: true })
+  @Column({ type: DataType.STRING(50), allowNull: false })
   name: string;
 
   @Column({ type: DataType.FLOAT(2), allowNull: false })

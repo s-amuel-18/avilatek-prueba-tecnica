@@ -1,9 +1,16 @@
 import { Op } from 'sequelize';
-import { CreateProduct, UpdateProduct } from '../interfaces/services/product-service.interface';
+import {
+  CreateProduct,
+  UpdateProduct,
+  CreateNewOrder,
+  FindAllOrdersParams,
+} from '../interfaces/services/product-service.interface';
 import { Pagination } from '../interfaces/validations/pagination.interface';
 import { Product } from '../models/product.model';
 import { BadRequestException, NotFoundException } from '../utils/error-exeptions.util';
 import { FindOneOptions } from '../interfaces/service.interface';
+import { User } from '../models/user.model';
+import { OrderHistory, deliveredStatusOrder, pendingStatusOrder } from '../models/order-history.model';
 
 class ProductService {
   // * Create
@@ -16,6 +23,33 @@ class ProductService {
       stock: createProduct.stock,
       description: createProduct.description,
     });
+  }
+
+  // TODO: Se debería implementar transaciones
+  async createNewOrder(user: User, createNewOrder: CreateNewOrder) {
+    const { productId, quantity } = createNewOrder;
+    const product = await this.findById(productId, { exceptionIfNotFound: true });
+    const productStock = product!.stock;
+    const quantityExceedsStock = quantity > productStock;
+
+    if (quantityExceedsStock)
+      throw new BadRequestException('La cantidad solicitada excede el stock actual del producto.');
+
+    const remainingStock = productStock - quantity;
+
+    const order = await OrderHistory.create({
+      status: pendingStatusOrder,
+      productId,
+      quantity,
+      userId: user.id,
+      requestedOn: new Date(),
+    });
+
+    await this.update(productId, {
+      stock: remainingStock,
+    });
+
+    return await this.findOrderById(order.id);
   }
 
   // * Find
@@ -42,8 +76,37 @@ class ProductService {
     return product;
   }
 
+  async findAllOrders(findAllOrdersParams: FindAllOrdersParams) {
+    const { limit = 10, page = 1, userId = null, productId = null, status = null } = findAllOrdersParams;
+    const offset = (page - 1) * limit;
+
+    return await OrderHistory.findAndCountAll({
+      distinct: true,
+      offset,
+      limit,
+      where: {
+        ...(userId ? { userId } : {}),
+        ...(productId ? { productId } : {}),
+        ...(status ? { status } : {}),
+      },
+    });
+  }
+
   async findByName(name: string) {
     return await Product.findOne({ where: { name } });
+  }
+
+  async findOrderById(orderId: number, findOneOptions: FindOneOptions = {}) {
+    const { exceptionIfNotFound = true, notFoundMsg = 'La orden no se encuentra registrado.' } =
+      findOneOptions;
+
+    const order = await OrderHistory.findOne({
+      where: { id: orderId },
+      include: [{ model: User }, { model: Product }],
+    });
+
+    if (exceptionIfNotFound && !order) throw new NotFoundException(notFoundMsg);
+    return order;
   }
 
   // * Update
@@ -52,6 +115,16 @@ class ProductService {
     await product?.update(updateProduct);
 
     return this.findById(productId);
+  }
+
+  async changeOrderStatus(orderId: number, status: number) {
+    const order = await this.findOrderById(orderId, { exceptionIfNotFound: true });
+
+    if (order?.status === deliveredStatusOrder)
+      throw new BadRequestException('El pedido ya fue entregado, no puede ser modificado.');
+
+    await order?.update({ status });
+    return await this.findOrderById(orderId);
   }
 
   // * Remove

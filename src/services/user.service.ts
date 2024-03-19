@@ -1,7 +1,7 @@
 // import { User } from 'src/models/user.model';
 
 import { CreateUser } from '../interfaces/services/user-service.interface';
-import { adminRole } from '../models/role.model';
+import { adminRole, clientRole } from '../models/role.model';
 import { User } from '../models/user.model';
 
 class UserService {
@@ -27,7 +27,7 @@ class UserService {
   // * Seeders
   async seeder() {
     const newUser = await User.create({
-      roleId: adminRole,
+      roleId: clientRole,
       name: 'Samuel Graterol',
       email: 'samuel@graterol.com',
       password: '11111111',
