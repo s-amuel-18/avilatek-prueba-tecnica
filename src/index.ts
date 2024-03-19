@@ -15,7 +15,7 @@ app.listen(environment.APP_PORT, () => {
 
         DATABASE.addModels([User, Role, Product]);
 
-        await DATABASE.sync({ force: environment.DB_FORCE_SYNC });
+        await DATABASE.sync({ force: environment.DB_FORCE_SYNC, alter: environment.DB_SYNC });
       })
       .catch(() => {
         console.log('[DATABASE]: Connection failed ❌');

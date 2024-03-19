@@ -50,7 +50,10 @@ class ProductService {
   async update(productId: number) {}
 
   // * Remove
-  async remove(productId: number) {}
+  async remove(productId: number) {
+    const product = await this.findById(productId, { exceptionIfNotFound: true });
+    await Product.destroy({ where: { id: productId } });
+  }
 
   // * Exceptions
   async throwExceptionIfNameExists(name: string) {

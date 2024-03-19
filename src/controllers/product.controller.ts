@@ -3,6 +3,7 @@ import { productService } from '../services/product.service';
 import { Pagination } from '../interfaces/validations/pagination.interface';
 
 class ProductController {
+  // * Post Methods
   async create(req: Request, res: Response, next: NextFunction) {
     const body = req.body;
 
@@ -18,6 +19,7 @@ class ProductController {
     }
   }
 
+  // * Get Methods
   async findAll(req: Request, res: Response, next: NextFunction) {
     const query = req.query;
 
@@ -40,6 +42,23 @@ class ProductController {
 
       res.json({
         data: { product },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // * Patch Methods
+
+  // * Delete Methods
+  async remove(req: Request, res: Response, next: NextFunction) {
+    const productId = +req.params.id;
+
+    try {
+      await productService.remove(productId);
+
+      res.json({
+        message: 'Producto eliminado correctamente.',
       });
     } catch (error) {
       next(error);
