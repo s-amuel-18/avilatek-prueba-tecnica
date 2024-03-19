@@ -120,6 +120,19 @@ class ProductController {
     }
   }
 
+  async changeOrderStatus(req: Request, res: Response, next: NextFunction) {
+    const { status } = matchedData(req);
+    const orderId = +req.params.orderId;
+    try {
+      const order = await productService.changeOrderStatus(orderId, status);
+      res.json({
+        data: { order },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // * Delete Methods
   async remove(req: Request, res: Response, next: NextFunction) {
     const productId = +req.params.id;

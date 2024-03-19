@@ -21,6 +21,8 @@ export const statusOrderTypes = {
   [canceledStatusOrder]: { id: canceledStatusOrder, name: 'Cancelado' },
 };
 
+export const orderStatusArray = Object.keys(statusOrderTypes).map(s => +s);
+
 @Table({ tableName: 'orders_history' })
 export class OrderHistory extends Model {
   @PrimaryKey

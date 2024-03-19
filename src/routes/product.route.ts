@@ -7,6 +7,7 @@ import {
   newOrderProductValidation,
   updateProductValidation,
   findAllOrdersValidation,
+  changeOrderStatusValidation,
 } from '../validations/product.validation';
 import { productController } from '../controllers/product.controller';
 import { auth } from '../middleware/auth.middleware';
@@ -31,6 +32,13 @@ router.post(
 );
 
 // * Patch Methods
+router.patch(
+  '/order/:orderId',
+  auth({ allowedRoles: [adminRole] }),
+  findOrderByIdValidation(),
+  changeOrderStatusValidation(),
+  productController.changeOrderStatus,
+);
 router.patch(
   '/:id',
   auth({ allowedRoles: [adminRole] }),

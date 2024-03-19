@@ -1,6 +1,7 @@
 import { body, param, query } from 'express-validator';
 import { validate } from '../utils/validate.util';
 import { pagination } from './utils.validation';
+import { orderStatusArray } from '../models/order-history.model';
 
 export const createProductValidation = () => [
   body('name')
@@ -108,5 +109,21 @@ export const findAllOrdersValidation = () => [
   query('userId').optional().notEmpty().isInt().toInt(),
   query('productId').optional().notEmpty().isInt().toInt(),
   query('status').optional().notEmpty().isInt().toInt(),
+  validate,
+];
+
+export const changeOrderStatusValidation = () => [
+  body('status')
+    .notEmpty()
+    .withMessage('El status es requerido')
+    .bail()
+    .isInt()
+    .withMessage('El status debe ser un numero entero validao.')
+    .bail()
+    .toInt()
+    .custom(status => {
+      if (!orderStatusArray.includes(+status)) throw new Error('El estatus es invalido.');
+      return true;
+    }),
   validate,
 ];

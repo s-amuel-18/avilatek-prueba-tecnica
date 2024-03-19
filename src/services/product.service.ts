@@ -10,7 +10,7 @@ import { Product } from '../models/product.model';
 import { BadRequestException, NotFoundException } from '../utils/error-exeptions.util';
 import { FindOneOptions } from '../interfaces/service.interface';
 import { User } from '../models/user.model';
-import { OrderHistory, pendingStatusOrder } from '../models/order-history.model';
+import { OrderHistory, deliveredStatusOrder, pendingStatusOrder } from '../models/order-history.model';
 
 class ProductService {
   // * Create
@@ -115,6 +115,16 @@ class ProductService {
     await product?.update(updateProduct);
 
     return this.findById(productId);
+  }
+
+  async changeOrderStatus(orderId: number, status: number) {
+    const order = await this.findOrderById(orderId, { exceptionIfNotFound: true });
+
+    if (order?.status === deliveredStatusOrder)
+      throw new BadRequestException('El pedido ya fue entregado, no puede ser modificado.');
+
+    await order?.update({ status });
+    return await this.findOrderById(orderId);
   }
 
   // * Remove
