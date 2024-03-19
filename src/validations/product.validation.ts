@@ -11,7 +11,8 @@ export const createProductValidation = () => [
     .withMessage('El nombre del producto debe ser de tipo texto.')
     .bail()
     .isLength({ max: 50 })
-    .withMessage('Longitud maxima de 50 caracteres.'),
+    .withMessage('Longitud maxima de 50 caracteres.')
+    .customSanitizer((name: string) => name.trim()),
   body('price')
     .notEmpty()
     .withMessage('El precio es requerido.')
@@ -36,7 +37,8 @@ export const createProductValidation = () => [
     .bail()
     .isLength({ max: 500 })
     .withMessage('Longitud maxima de 500 caracteres.')
-    .bail(),
+    .bail()
+    .customSanitizer((desc: string) => desc.trim()),
   validate,
 ];
 
@@ -54,7 +56,8 @@ export const updateProductValidation = () => [
     .withMessage('El nombre del producto debe ser de tipo texto.')
     .bail()
     .isLength({ max: 50 })
-    .withMessage('Longitud maxima de 50 caracteres.'),
+    .withMessage('Longitud maxima de 50 caracteres.')
+    .customSanitizer((name: string) => name.trim()),
   body('price')
     .optional()
     .notEmpty()
@@ -81,6 +84,26 @@ export const updateProductValidation = () => [
     .bail()
     .isLength({ max: 500 })
     .withMessage('Longitud maxima de 500 caracteres.')
-    .bail(),
+    .bail()
+    .customSanitizer((desc: string) => desc.trim()),
+  validate,
+];
+
+export const newOrderProductValidation = () => [
+  // body('productId')
+  //   .notEmpty()
+  //   .withMessage('El ID del producto es requerido.')
+  //   .bail()
+  //   .isInt({ min: 1 })
+  //   .withMessage('El ID del producto debe ser un numero entero valido.')
+  //   .toInt(),
+  body('quantity')
+    .notEmpty()
+    .withMessage('La cantidad es requerido.')
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage('debe ser un numero entero valido')
+    .toInt(),
+
   validate,
 ];

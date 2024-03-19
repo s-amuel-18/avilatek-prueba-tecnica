@@ -11,3 +11,8 @@ export interface UpdateProduct {
   stock?: number;
   description?: string;
 }
+
+export interface CreateNewOrder {
+  productId: number;
+  quantity: number;
+}

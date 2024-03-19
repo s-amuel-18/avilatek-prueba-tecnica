@@ -9,8 +9,10 @@ import {
   Default,
   BeforeCreate,
   UpdatedAt,
+  HasMany,
 } from 'sequelize-typescript';
 import * as bcrypt from 'bcryptjs';
+import { OrderHistory } from './order-history.model';
 
 @Table({ tableName: 'users' })
 export class User extends Model {
@@ -38,6 +40,10 @@ export class User extends Model {
   @UpdatedAt
   @Column({ field: 'updated_at', type: DataType.DATE })
   updatedAt: Date;
+
+  // * Relations
+  @HasMany(() => OrderHistory)
+  orders: OrderHistory[];
 
   // * Hooks
   @BeforeCreate

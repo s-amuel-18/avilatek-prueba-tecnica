@@ -1,9 +1,15 @@
 import { Op } from 'sequelize';
-import { CreateProduct, UpdateProduct } from '../interfaces/services/product-service.interface';
+import {
+  CreateProduct,
+  UpdateProduct,
+  CreateNewOrder,
+} from '../interfaces/services/product-service.interface';
 import { Pagination } from '../interfaces/validations/pagination.interface';
 import { Product } from '../models/product.model';
 import { BadRequestException, NotFoundException } from '../utils/error-exeptions.util';
 import { FindOneOptions } from '../interfaces/service.interface';
+import { User } from '../models/user.model';
+import { OrderHistory, pendingStatusOrder } from '../models/order-history.model';
 
 class ProductService {
   // * Create
@@ -16,6 +22,33 @@ class ProductService {
       stock: createProduct.stock,
       description: createProduct.description,
     });
+  }
+
+  // TODO: Se debería implementar transaciones
+  async createNewOrder(user: User, createNewOrder: CreateNewOrder) {
+    const { productId, quantity } = createNewOrder;
+    const product = await this.findById(productId, { exceptionIfNotFound: true });
+    const productStock = product!.stock;
+    const quantityExceedsStock = quantity > productStock;
+
+    if (quantityExceedsStock)
+      throw new BadRequestException('La cantidad solicitada excede el stock actual del producto.');
+
+    const remainingStock = productStock - quantity;
+
+    const order = await OrderHistory.create({
+      status: pendingStatusOrder,
+      productId,
+      quantity,
+      userId: user.id,
+      requestedOn: new Date(),
+    });
+
+    await this.update(productId, {
+      stock: remainingStock,
+    });
+
+    return await this.findOrderById(order.id);
   }
 
   // * Find
@@ -44,6 +77,15 @@ class ProductService {
 
   async findByName(name: string) {
     return await Product.findOne({ where: { name } });
+  }
+
+  async findOrderById(orderId: number, findOneOptions: FindOneOptions = {}) {
+    const { exceptionIfNotFound = true, notFoundMsg = 'La orden no se encuentra registrado.' } =
+      findOneOptions;
+
+    const order = await OrderHistory.findOne({ where: { id: orderId } });
+    if (exceptionIfNotFound && !order) throw new NotFoundException(notFoundMsg);
+    return order;
   }
 
   // * Update

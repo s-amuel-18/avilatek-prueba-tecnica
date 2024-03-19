@@ -3,6 +3,7 @@ import {
   createProductValidation,
   findAllProductsValidation,
   findByIdProductValidation,
+  newOrderProductValidation,
   updateProductValidation,
 } from '../validations/product.validation';
 import { productController } from '../controllers/product.controller';
@@ -17,6 +18,13 @@ router.get('/:id', auth(), findByIdProductValidation(), productController.findBy
 
 // * Post Methods
 router.post('/', auth({ allowedRoles: [adminRole] }), createProductValidation(), productController.create);
+router.post(
+  '/:id/new-order',
+  auth(),
+  findByIdProductValidation(),
+  newOrderProductValidation(),
+  productController.newOrder,
+);
 
 // * Patch Methods
 router.patch(
