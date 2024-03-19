@@ -32,6 +32,19 @@ class ProductController {
       next(error);
     }
   }
+
+  async findById(req: Request, res: Response, next: NextFunction) {
+    const productId = +req.params.id;
+    try {
+      const product = await productService.findById(productId, { exceptionIfNotFound: true });
+
+      res.json({
+        data: { product },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const productController = new ProductController();

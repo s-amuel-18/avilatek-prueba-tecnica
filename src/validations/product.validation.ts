@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { validate } from '../utils/validate.util';
 import { pagination } from './utils.validation';
 
@@ -41,3 +41,5 @@ export const createProductValidation = () => [
 ];
 
 export const findAllProductsValidation = () => [...pagination()];
+
+export const findByIdProductValidation = () => [param('id').notEmpty().isInt().toInt(), validate];

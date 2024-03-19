@@ -2,7 +2,8 @@ import { Op } from 'sequelize';
 import { CreateProduct } from '../interfaces/services/product-service.interface';
 import { Pagination } from '../interfaces/validations/pagination.interface';
 import { Product } from '../models/product.model';
-import { BadRequestException } from '../utils/error-exeptions.util';
+import { BadRequestException, NotFoundException } from '../utils/error-exeptions.util';
+import { FindOneOptions } from '../interfaces/service.interface';
 
 class ProductService {
   // * Create
@@ -32,7 +33,14 @@ class ProductService {
     return products;
   }
 
-  async findOne() {}
+  async findById(id: number, findOneOptions: FindOneOptions = {}) {
+    const { exceptionIfNotFound = true, notFoundMsg = 'El producto no se encuentra registrado.' } =
+      findOneOptions;
+
+    const product = await Product.findOne({ where: { id } });
+    if (exceptionIfNotFound && !product) throw new NotFoundException(notFoundMsg);
+    return product;
+  }
 
   async findByName(name: string) {
     return await Product.findOne({ where: { name } });
