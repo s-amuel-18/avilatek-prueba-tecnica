@@ -60,6 +60,14 @@ IMPORTANTE: Si tienes algún error con respecto al paquete nodemon, puedes ejecu
 
 NOTA: Podemos cambiar a "false" las variables de sincronización de tablas luego de que se creen todas las tablas necesarias.
 
+Si todo salió correcto verás esto en la consola.
+
+```bash
+[SERVER STARTED]
+[SERVER URL]: http://localhost:3000
+[DATABASE]: Successfully connected
+```
+
 Posteriormente ejecutamos una petición de tipo POST al endpoint `api/seeders/execute` para crear los registros necesarios en nuestra base de datos.
 
 NOTA: Los Seeders los ejecuto de esa forma por practicidad, en un proyecto real sería más recomendable implementar un método más robusto y seguro.
