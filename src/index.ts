@@ -21,6 +21,8 @@ app.listen(environment.APP_PORT, () => {
       .catch(() => {
         console.log('[DATABASE]: Connection failed ❌');
       });
+
+    console.log(`[SERVER URL]: http://localhost:${environment.APP_PORT}`);
   } catch (error) {
     console.log('[SERVER ERROR]');
   }
